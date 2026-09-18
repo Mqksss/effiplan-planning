@@ -28,12 +28,14 @@ def build_ics(events, calendar_name="Planning Effiplan"):
         "X-WR-TIMEZONE:Europe/Paris",
     ]
 
-    now_stamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
+    # Fixed (not "now") so re-generating an unchanged schedule produces byte-identical
+    # output - otherwise every run would look like a diff and get committed/pushed.
+    stable_stamp = "20260101T000000Z"
 
     for ev in events:
         lines.append("BEGIN:VEVENT")
         lines.append(f"UID:{ev['id']}@effiplan-sync")
-        lines.append(f"DTSTAMP:{now_stamp}")
+        lines.append(f"DTSTAMP:{stable_stamp}")
         if ev["all_day"]:
             lines.append(f"DTSTART;VALUE=DATE:{_fmt_date(ev['start'])}")
             lines.append(f"DTEND;VALUE=DATE:{_fmt_date(ev['end'])}")
